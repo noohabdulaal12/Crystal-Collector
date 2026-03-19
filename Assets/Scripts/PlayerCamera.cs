@@ -3,21 +3,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerCamera : MonoBehaviour
 {
-    public Transform target;
-    public Vector3 offset = new Vector3(0, 5, -10);
-    public float smoothSpeed = 0.125f;
+    public Transform target; // To rreference player
+    public Vector3 offset = new Vector3(0, 5, -10); // Distance between camera and player
+    public float smoothSpeed = 1f; // How fast the camera catches up to the player
 
-    public float sensitivity = 0.2f;
-    public float pitch = 0f;
-    public float yaw = 0f; // New variable for horizontal rotation
+    public float sensitivity = 0.2f; // Multiplier for mouse movement 
+    public float pitch = 0f; // Initial setting for camera for X axis
+    public float yaw = 0f; // Initial setting for camera for Y axis
+    public float lookHeight = 1.5f; // Additive for camera Y axis
 
     void LateUpdate()
     {
         if (target == null) return;
 
-        // 1. Handle Mouse Input
         if (Pointer.current != null)
         {
+            // Change in mouse
             Vector2 mouseDelta = Pointer.current.delta.ReadValue();
 
             // Horizontal rotation (Yaw)
@@ -30,15 +31,11 @@ public class PlayerCamera : MonoBehaviour
 
         target.rotation = Quaternion.Euler(0, yaw, 0);
 
-        // 2. Calculate the Rotation
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
 
-        // 3. Position the Camera (Orbiting)
-        // This math calculates a point at 'offset' distance away, rotated by our mouse
         Vector3 desiredPosition = target.position + (rotation * offset);
         transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
 
-        // 4. Always look at the player
-        transform.LookAt(target.position + Vector3.up * 1.5f); // Look slightly above feet
+        transform.LookAt(target.position + Vector3.up * lookHeight); 
     }
 }
